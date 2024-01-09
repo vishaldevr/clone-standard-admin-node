@@ -16,7 +16,12 @@ const userSchema = mongoose.Schema({
   account_activated_token: { type: String },
   forgotPasswordToken: { type: String },
   forgotPasswordExpiry: { type: Date },
-  roles:{type:Array}
+  roles: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Role', 
+    },
+  ],
 });
 
 userSchema.methods = {

@@ -1,10 +1,11 @@
 import nodemailer from 'nodemailer';
-import SettingModel from '../model/setting.model.js';
+// import SettingModel from '../model/setting.model.js';
 
+// eslint-disable-next-line no-unused-vars
 const sendEmail = async function (mailOptions, id) {
-  console.log('id: ', id);
-  const setting = await SettingModel.findById(id);
-  console.log('setting: ', setting);
+
+  // const setting = await SettingModel.findById(id);
+
 
   const transport = nodemailer.createTransport({
     host: 'sandbox.smtp.mailtrap.io',
