@@ -342,7 +342,6 @@ const getUser = async (req, res) => {
   const { id } = req.params;
   try {
     const user = await UserModel.findById(id).populate('roles');
-    // const modifyUser = {...user,roles:user.roles.map((role) => role.name)};
     res.status(200).json(user);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -351,11 +350,8 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const id = req.params.id;
-  console.log('id: ', id);
   const { name, email, mobile_no, phone_no, note, is_active, password, roles } =
   req.body;
-  console.log('req.body: ', req.body);
-  console.log('password: ', password);
   try {
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ success: false, error: 'User Invalid!' });
     let updatedUser = {
@@ -368,12 +364,13 @@ const updateUser = async (req, res) => {
       is_active,
       roles,
     };
+    console.log("roles: ", [roles]);
  
     const user = await UserModel.findById(id);
  
-    // const roleNames = await roleModel.find({ name: { $in: roles } }).select('_id');
-    // console.log('roleNames: ', roleNames);
-    // updatedUser = { ...updatedUser, roles: roleNames.map(role => role._id) };
+    const roleNames = await roleModel.find({ _id: { $in: roles } });
+  
+    updatedUser = { ...updatedUser, roles: roleNames.map(role => role._id) };
  
     if (password !== '' && password !== null) {
       let bcryptedPassword = await bcrypt.hash(password, 12);
@@ -461,14 +458,14 @@ const getUserPermissions = async (req, res) => {
 
   try {
     // Fetch the user by ID
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findById(userId).populate('roles');
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Get user roles
-    const userRoles = user.roles;
+    const userRoles = user.roles.map((r) => r.name);
 
     // Fetch permissions for each role
     const permissions = await roleModel
